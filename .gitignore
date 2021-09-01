@@ -30,3 +30,10 @@
 *.exe
 *.out
 *.app
+
+build
+third_party/cmake-build*/
+third_party/install/
+third_party/poco/
+third_party/spdlog/
+third_party/abseil-cpp/

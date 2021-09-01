@@ -9,6 +9,7 @@ cc_binary(
     includes = ["inc"],
     deps = [
         "@com_md_w_scratch//utils:cpp-utils",
+        # "@com_md_w_scratch//:ray_util",
         # "@com_google_benchmark//:benchmark",
     ],
 )

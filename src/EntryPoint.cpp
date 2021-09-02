@@ -1,8 +1,10 @@
-#include <Poco/Util/ServerApplication.h>
 #include <Poco/Util/HelpFormatter.h>
+#include <Poco/Util/ServerApplication.h>
 #include <logging.h>
 
-std::string get_session_folder() { return "./session/"; }
+#include "LogReceiverServer.h"
+
+static std::string get_session_folder() { return "./session/"; }
 class EntryPoint : public Poco::Util::ServerApplication {
  public:
   EntryPoint() : _shutDown(false) {
@@ -16,43 +18,46 @@ class EntryPoint : public Poco::Util::ServerApplication {
     ::ray::RayLog::ShutDownRayLog();
     ;
   }
-    void initialize(Application &self)
-    {
-        loadConfiguration(); // load default configuration files, if present
-        ServerApplication::initialize(self);
-    }
+  void initialize(Application &self) {
+    loadConfiguration();  // load default configuration files, if present
+    ServerApplication::initialize(self);
+  }
 
-    void uninitialize()
-    {
-        ServerApplication::uninitialize();
-    }
+  void uninitialize() { ServerApplication::uninitialize(); }
 
-    void defineOptions(Poco::Util::OptionSet &options)
-    {
-        ServerApplication::defineOptions(options);
-        options.addOption(Poco::Util::Option("help", "h", "display help information on command line arguments").required(false).repeatable(false));
-    }
+  void defineOptions(Poco::Util::OptionSet &options) {
+    ServerApplication::defineOptions(options);
+    options.addOption(Poco::Util::Option("help", "h", "display help information on command line arguments")
+                          .required(false)
+                          .repeatable(false));
+  }
 
-    void handleOption(const std::string &name, const std::string &value)
-    {
-        ServerApplication::handleOption(name, value);
-    }
+  void handleOption(const std::string &name, const std::string &value) { ServerApplication::handleOption(name, value); }
 
-    void displayHelp()
-    {
-        Poco::Util::HelpFormatter helpFormatter(options());
-        helpFormatter.setCommand(commandName());
-        helpFormatter.setUsage("OPTIONS");
-        helpFormatter.setHeader("A web server that shows how to work with HTML forms.");
-        helpFormatter.format(std::cout);
-    }
+  void displayHelp() {
+    Poco::Util::HelpFormatter helpFormatter(options());
+    helpFormatter.setCommand(commandName());
+    helpFormatter.setUsage("OPTIONS");
+    helpFormatter.setHeader("A web server that shows how to work with HTML forms.");
+    helpFormatter.format(std::cout);
+  }
 
-    int main(const ArgVec &args)
-    {
-        waitForTerminationRequest();
-        RAY_LOG(INFO) << "Shutdown request received.";
-        return Application::EXIT_OK;
-    }
+  int main(const ArgVec &args) {
+    Poco::UInt16 port = 23000;
+    Poco::Net::TCPServer srv(new TCPFactory(), port);
+    srv.start();
+    
+    RAY_LOG(INFO) << "TCP server listening on port " << port;
+
+    waitForTerminationRequest();
+    RAY_LOG(INFO) << "Shutdown request received.";
+
+    srv.stop();
+    RAY_LOG(INFO) << "TCP Server Stopped.";
+
+    return Application::EXIT_OK;
+  }
+
  private:
   bool _shutDown;
   const std::string _name_of_app = "HttpServer";

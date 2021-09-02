@@ -1,10 +1,11 @@
 #include "LogReceiverServer.h"
 
+#include <Poco/Net/NetException.h>
+#include <Poco/Net/SocketAddress.h>
+#include <Poco/Net/SocketStream.h>
+#include <Poco/Net/StreamSocket.h>
 #include <logging.h>
 
-#include "Poco/Net/SocketAddress.h"
-#include "Poco/Net/SocketStream.h"
-#include "Poco/Net/StreamSocket.h"
 #include "status.pb.h"
 
 #define FUNC_TYPE_DATA 1
@@ -24,47 +25,35 @@ LogReceiverServer::LogReceiverServer(const Poco::Net::StreamSocket& s)
 LogReceiverServer::~LogReceiverServer() { RAY_LOG(INFO) << "Finished: Inside constructor." << get_name_of_app(); }
 void LogReceiverServer::shutDown() { _is_shutdown_command_received = true; }
 bool LogReceiverServer::getData(Poco::Net::StreamSocket& ss, void* buff, int bytes_to_read) {
-  return ss.receiveBytes(buff, buff_len);
-  // int length = 0;
-  // while (true)
-  // {
-  //   int x = bytes_to_read - length;
-  //   if 
-  // }
-  // return length == bytes_to_read;
-  
-
-// def read_data_n(s: socket.socket, data_array: bytearray, bytes_to_read: int) -> bool:
-//     length = 0
-//     if not s:
-//         return False
-//     while True:
-//         x = bytes_to_read - length
-//         if x > 0:
-//             try:
-//                 length_received = s.recv_into(memoryview(data_array)[length:], x)
-//                 if length_received <= 0:
-//                     break
-//                 length += length_received
-//             except (socket.timeout, OSError) as e:
-//                 # LOGGER.exception(e)
-//                 break
-//         else:
-//             break
-//     return length == bytes_to_read
-
-//   return ss.receiveBytes(buff, buff_len);
-// }
+  int length = 0;
+  while (true) {
+    int x = bytes_to_read - length;
+    if (x > 0) {
+      try {
+        int length_received = ss.receiveBytes(buff, x);
+        if (length_received <= 0) break;
+        length += length_received;
+      } catch (const Poco::TimeoutException& e) {
+        break;
+      } catch (const Poco::Net::NetException& e) {
+        break;
+      }
+    } else {
+      break;
+    }
+  }
+  return length == bytes_to_read;
 }
 void LogReceiverServer::run() {
   Poco::Net::StreamSocket& ss = socket();
   ReceiverState state = ReceiverState::None;
+  /*
   do {
     try {
       unsigned long to_len = 0;
-      
-        while (state != ReceiverState::End) {
-          switch (state) {
+
+      while (state != ReceiverState::End) {
+        switch (state) {
           case ReceiverState::None:
           case ReceiverState::FuncType: {
             int to_func_type = 0;
@@ -85,13 +74,13 @@ void LogReceiverServer::run() {
             to_len = 0;
             to_len = (unsigned long)std::stol(buffer);
             state = ReceiverState::Data;
-          } break;     
+          } break;
           case ReceiverState::Data: {
-
-          } break;  
-          case ReceiverState::End: {} break;          
-          }
+          } break;
+          case ReceiverState::End: {
+          } break;
         }
+      }
     } catch (const std::exception& e) {
       std::cerr << e.what() << '\n';
     }
@@ -111,4 +100,5 @@ void LogReceiverServer::run() {
   } catch (Poco::Exception& exc) {
     std::cerr << "ClientConnection: " << exc.displayText() << std::endl;
   }
+  */
 }

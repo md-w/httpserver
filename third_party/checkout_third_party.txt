@@ -1,14 +1,15 @@
-git  clone --depth 1 --no-single-branch --origin "poco-serial-1.11.0-release" "https://github.com/vtpl1/poco.git"
+git  clone --depth 1 --origin "poco-serial-1.11.0-release" "https://github.com/vtpl1/poco.git"
 
-mkdir cmake-build
 mkdir install
-cd cmake-build
+
+mkdir cmake-build-poco
+cd cmake-build-poco
 cmake -DBUILD_SHARED_LIBS=NO -DCMAKE_INSTALL_PREFIX="./../install" "../poco" -G"Visual Studio 16 2019" -A x64
 cmake --build . --config Release --target install
 cmake --build . --config Debug --target install
 
 cd ..
-git  clone --depth 1 --no-single-branch --origin "v1.9.2" "https://github.com/gabime/spdlog.git"
+git  clone --depth 1 --origin "v1.9.2" "https://github.com/gabime/spdlog.git"
 mkdir cmake-build-spdlog
 cd cmake-build-spdlog
 cmake -DCMAKE_INSTALL_PREFIX="./../install" "../spdlog" -G"Visual Studio 16 2019" -A x64
@@ -16,7 +17,7 @@ cmake --build . --config Release --target install
 cmake --build . --config Debug --target install
 
 cd ..
-git  clone --depth 1 --no-single-branch --origin "lts_2021_03_24" "https://github.com/abseil/abseil-cpp.git"
+git  clone --depth 1 --origin "lts_2021_03_24" "https://github.com/abseil/abseil-cpp.git"
 mkdir cmake-build-abseil
 cd cmake-build-abseil
 

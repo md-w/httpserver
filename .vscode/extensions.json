@@ -1,0 +1,11 @@
+{
+    "recommendations": [
+        "ms-vscode.cpptools",
+        // "bazelbuild.vscode-bazel",
+        "ms-vscode.cmake-tools",
+        "wmaurer.change-case",
+        "ms-vscode.cpptools-themes",
+        // "devondcarew.bazel-code",
+		// "ms-python.vscode-pylance",
+    ]
+}

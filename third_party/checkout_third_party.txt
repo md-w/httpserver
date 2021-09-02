@@ -24,3 +24,10 @@ cd cmake-build-abseil
 cmake -DCMAKE_INSTALL_PREFIX="./../install" -DABSL_ENABLE_INSTALL=ON "../abseil-cpp" -G"Visual Studio 16 2019" -A x64
 cmake --build . --config Release --target install
 cmake --build . --config Debug --target install
+
+git clone --depth 1 -b "v3.17.3" https://github.com/protocolbuffers/protobuf.git
+mkdir cmake-build-protobuf
+cd cmake-build-protobuf
+cmake -DCMAKE_INSTALL_PREFIX="./../install" -Dprotobuf_BUILD_TESTS=OFF "../protobuf/cmake" -G"Visual Studio 16 2019" -A x64
+cmake --build . --config Release --target install
+cmake --build . --config Debug --target install

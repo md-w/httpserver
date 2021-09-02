@@ -3,7 +3,7 @@ project(http_server)
 set(CMAKE_EXPORT_COMPILE_COMMANDS)
 
 find_package(Poco COMPONENTS Foundation Util Net PATHS "third_party/install")
-find_package(Protobuf REQUIRED PATHS ${CMAKE_SOURCE_DIR}/3rdparty/install)
+find_package(Protobuf REQUIRED PATHS ${CMAKE_SOURCE_DIR}/third_party/install)
 
 add_subdirectory(utils)
 

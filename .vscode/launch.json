@@ -1,0 +1,26 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "entry_point",
+            "type": "cppvsdbg",
+            "program": "${workspaceRoot}/build/Debug/http_server.exe",
+            "request": "launch",
+            "cwd": "${workspaceRoot}",
+            "windows": {
+                "name": "entry_point",
+                "type": "cppvsdbg",
+                "request": "launch",
+                "program": "${workspaceFolder}/build/Debug/http_server.exe",
+                "args": [],
+                "stopAtEntry": true,
+                "cwd": "${workspaceRoot}",
+                "environment": [],
+                "externalConsole": false,
+            },
+        }
+    ]
+}

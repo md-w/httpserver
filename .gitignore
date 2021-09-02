@@ -37,3 +37,4 @@ third_party/install/
 third_party/poco/
 third_party/spdlog/
 third_party/abseil-cpp/
+third_party/protobuf/

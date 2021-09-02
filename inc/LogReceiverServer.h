@@ -38,6 +38,7 @@ class LogReceiverServer : public Poco::Util::Subsystem, public Poco::Net::TCPSer
 
  private:
   void run();
+  bool getData(Poco::Net::StreamSocket& ss, void* buff, int bytes_to_read);
 
  public:
   LogReceiverServer(const Poco::Net::StreamSocket& s);

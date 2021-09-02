@@ -27,6 +27,10 @@ RUN git clone --depth 1 --origin "lts_2021_03_24" "https://github.com/abseil/abs
     && cd abseil-cpp && mkdir cmake-build && cd cmake-build && cmake -DABSL_ENABLE_INSTALL=ON .. && cmake --build . --config Release --target install && cmake --build . --config Debug --target install \
     && cd ../.. && rm -rf abseil-cpp
 
+RUN git clone --depth 1 -b "v3.17.3" https://github.com/protocolbuffers/protobuf.git \
+    && cd protobuf && mkdir cmake-build && cd cmake-build && cmake -Dprotobuf_BUILD_TESTS=OFF ../cmake && cmake --build . --config Release --target install \
+    && cd ../.. && rm -rf protobuf
+
 ARG USERNAME=vscode
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID

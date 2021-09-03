@@ -3,6 +3,7 @@
 #include <logging.h>
 
 #include "LogReceiverServer.h"
+#include "CentralDataRepo.h"
 
 static std::string get_session_folder() { return "./session/"; }
 class EntryPoint : public Poco::Util::ServerApplication {
@@ -43,6 +44,7 @@ class EntryPoint : public Poco::Util::ServerApplication {
   }
 
   int main(const ArgVec &args) {
+    CentralDataRepo::getInstance();
     Poco::UInt16 port = 23000;
     Poco::Net::TCPServer srv(new TCPFactory(), port);
     srv.start();
@@ -54,7 +56,7 @@ class EntryPoint : public Poco::Util::ServerApplication {
 
     srv.stop();
     RAY_LOG(INFO) << "TCP Server Stopped.";
-
+    CentralDataRepo::deleteInstance();
     return Application::EXIT_OK;
   }
 

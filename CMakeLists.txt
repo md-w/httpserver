@@ -12,11 +12,13 @@ add_subdirectory(utils)
 add_executable(http_server 
     src/EntryPoint.cpp
     src/LogReceiverServer.cpp
-    # src/status.pb.cc
+    src/CentralDataRepo.cpp
     )
 
 target_include_directories(http_server
-    PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    PUBLIC inc
+    PRIVATE ${CMAKE_CURRENT_BINARY_DIR}
+    )
 
 protobuf_generate(
     LANGUAGE cpp
@@ -31,9 +33,3 @@ target_link_libraries(http_server
     PUBLIC utils
     PUBLIC protobuf::libprotobuf
     )
-
-# set_property(TARGET http_server PROPERTY
-#   MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-
-target_include_directories(http_server
-    PUBLIC inc)

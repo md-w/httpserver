@@ -21,8 +21,7 @@ target_include_directories(http_server
 protobuf_generate(
     LANGUAGE cpp
     TARGET http_server
-    PROTOS ${CMAKE_SOURCE_DIR}/interfaces/vtpl_analytics_app_models.proto
-    # PROTOS ${CMAKE_SOURCE_DIR}/docs/status.proto
+    PROTOS ${CMAKE_SOURCE_DIR}/interfaces/status.proto
     )
 
 target_link_libraries(http_server 

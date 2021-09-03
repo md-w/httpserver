@@ -31,6 +31,8 @@
 *.out
 *.app
 
+session/
+
 build/
 third_party/cmake*/
 third_party/install/

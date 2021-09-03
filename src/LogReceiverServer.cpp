@@ -6,7 +6,7 @@
 #include <Poco/Net/StreamSocket.h>
 #include <logging.h>
 
-#include "status.pb.h"
+#include "interfaces/status.pb.h"
 
 #define FUNC_TYPE_DATA 1
 #define FUNC_TYPE_EOF 2

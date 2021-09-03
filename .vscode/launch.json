@@ -21,6 +21,25 @@
                 "environment": [],
                 "externalConsole": false,
             },
+            "linux": {
+                "name": "entry_point",
+                "type": "cppdbg",
+                "request": "launch",
+                "program": "${workspaceFolder}/build/http_server",
+                "args": [],
+                "stopAtEntry": true,
+                "cwd": "${workspaceRoot}",
+                "environment": [],
+                "externalConsole": false,
+                "MIMode": "gdb",
+                "setupCommands": [
+                    {
+                        "description": "Enable pretty-printing for gdb",
+                        "text": "-enable-pretty-printing",
+                        "ignoreFailures": true
+                    }
+                ]
+            }
         }
     ]
 }

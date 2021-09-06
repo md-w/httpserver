@@ -5,6 +5,7 @@
 #include "CentralDataRepo.h"
 #include "HTTPServer.h"
 #include "LogReceiverServer.h"
+#include "LogReceiverTCPServerConnectionFactory.h"
 
 static std::string get_session_folder() { return "./session/"; }
 class EntryPoint : public Poco::Util::ServerApplication {
@@ -49,7 +50,7 @@ class EntryPoint : public Poco::Util::ServerApplication {
   int main(const ArgVec &args) {
     Poco::UInt16 port = 23000;
     Poco::Net::TCPServer *pSrv =
-        new Poco::Net::TCPServer(new Poco::Net::TCPServerConnectionFactoryImpl<LogReceiverServer>(), port);
+        new Poco::Net::TCPServer(new LogReceiverTCPServerConnectionFactory(), port);
     pSrv->start();
 
     RAY_LOG(INFO) << "TCP server listening on port " << port;
@@ -57,8 +58,11 @@ class EntryPoint : public Poco::Util::ServerApplication {
     waitForTerminationRequest();
     RAY_LOG(INFO) << "Shutdown request received.";
 
+    RAY_LOG(INFO) << "Before stop 1.";
     pSrv->stop();
+    RAY_LOG(INFO) << "After stop 2.";
     delete pSrv;
+    RAY_LOG(INFO) << "After delete srv.";
 
     Poco::ThreadPool::defaultPool().joinAll();
     RAY_LOG(INFO) << "TCP Server Stopped.";

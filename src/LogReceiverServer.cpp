@@ -36,11 +36,12 @@ ReceiverState operator++(ReceiverState& state) {
 
 LogReceiverServer::LogReceiverServer(const Poco::Net::StreamSocket& s)
     : TCPServerConnection(s), _is_shutdown_command_received(false) {
-  RAY_LOG(INFO) << "Started: Inside constructor.";
+  RAY_LOG(INFO) << "Started: Constructor: LogReceiverServer";
 }
 LogReceiverServer::~LogReceiverServer() {
+  RAY_LOG(INFO) << "Destructor called: LogReceiverServer.";
   shutDown();
-  RAY_LOG(INFO) << "Finished: Inside constructor.";
+  RAY_LOG(INFO) << "Destructor executed: LogReceiverServer.";
 }
 void LogReceiverServer::shutDown() { _is_shutdown_command_received = true; }
 

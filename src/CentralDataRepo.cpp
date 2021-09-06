@@ -1,7 +1,6 @@
 #include "CentralDataRepo.h"
 
 #include "interfaces/status.pb.h"
-#include "Poco/JSON/Object.h"
 
 CentralDataRepo* CentralDataRepo::instance_ = nullptr;
 
@@ -43,6 +42,14 @@ ThreadStatus& operator<<(ThreadStatus& out, const ::resource::ThreadStatus& in) 
   return out;
 }
 
+void operator>>(ThreadStatus& in, Poco::JSON::Object::Ptr out) {
+  out->set("id", in.id);
+  out->set("channel_id", in.channel_id);
+  out->set("value", in.value.load());
+  out->set("last_value", in.last_value.load());
+  out->set("last_updated_in_ms", in.last_updated_in_ms.load());
+}
+
 ProcessStatus::ProcessStatus() : id(0), channel_id(0) {}
 
 ProcessStatus::ProcessStatus(int64_t _id) : id(_id) {}
@@ -66,6 +73,18 @@ ProcessStatus& operator<<(ProcessStatus& out, const ::resource::ProcessStatus& i
     out << it;
   }
   return out;
+}
+
+void operator>>(ProcessStatus& in, Poco::JSON::Object::Ptr out) {
+  out->set("id", in.id);
+  out->set("channel_id", in.channel_id);
+  Poco::JSON::Array::Ptr p_thread_status_arr = new Poco::JSON::Array();
+  for (auto&& it : in.thread_status) {
+    Poco::JSON::Object::Ptr p_thread_status = new Poco::JSON::Object();
+    *(it.second.get()) >> p_thread_status;
+    p_thread_status_arr->add(p_thread_status);
+  }
+  out->set("thread_status", p_thread_status_arr);
 }
 
 MachineStatus::MachineStatus() : id(0), channel_id(0) {}
@@ -93,6 +112,18 @@ MachineStatus& operator<<(MachineStatus& out, const ::resource::MachineStatus& i
   return out;
 }
 
+void operator>>(MachineStatus& in, Poco::JSON::Object::Ptr out) {
+  out->set("id", in.id);
+  out->set("channel_id", in.channel_id);
+  Poco::JSON::Array::Ptr p_process_status_arr = new Poco::JSON::Array();
+  for (auto&& it : in.process_status) {
+    Poco::JSON::Object::Ptr p_process_status = new Poco::JSON::Object();
+    *(it.second.get()) >> p_process_status;
+    p_process_status_arr->add(p_process_status);
+  }
+  out->set("process_status", p_process_status_arr);
+}
+
 ClusterStatus::ClusterStatus() : id(0), channel_id(0) {}
 
 ClusterStatus::ClusterStatus(int64_t _id) : id(_id) {}
@@ -118,6 +149,20 @@ ClusterStatus& operator<<(ClusterStatus& out, const ::resource::ClusterStatus& i
   return out;
 }
 
+void operator>>(ClusterStatus& in, Poco::JSON::Object::Ptr out) {
+  // TODO
+  // out.assign(new Poco::JSON::Object());
+  out->set("id", in.id);
+  out->set("channel_id", in.channel_id);
+  Poco::JSON::Array::Ptr p_machine_status_arr = new Poco::JSON::Array();
+  for (auto&& it : in.machine_status) {
+    Poco::JSON::Object::Ptr p_machine_status = new Poco::JSON::Object();
+    *(it.second.get()) >> p_machine_status;
+    p_machine_status_arr->add(p_machine_status);
+  }
+  out->set("machine_status", p_machine_status_arr);
+}
+
 CentralDataRepo::CentralDataRepo() : cluster_status(0) {}
 
 CentralDataRepo& operator<<(CentralDataRepo& out, const ::resource::MachineStatus& in) {
@@ -130,10 +175,11 @@ CentralDataRepo& operator<<(CentralDataRepo& out, const ::resource::ClusterStatu
   return out;
 }
 
-std::ostream& operator>>(CentralDataRepo& out, std::ostream& ostr) {
-  Poco::JSON::Object obj_cluster_status;
-  obj_cluster_status.set("channel_id", 1);
-  obj_cluster_status.set("id", 1);
-  obj_cluster_status.stringify(ostr);
+std::ostream& operator>>(CentralDataRepo& in, std::ostream& ostr) {
+  Poco::JSON::Object obj;
+  Poco::JSON::Object::Ptr p = new Poco::JSON::Object();
+  in.cluster_status >> p;
+  obj.set("cluster", p);
+  obj.stringify(ostr);
   return ostr;
 }

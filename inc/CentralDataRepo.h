@@ -14,6 +14,7 @@
 #include <memory>
 
 #include "interfaces/status.pb.h"
+#include "Poco/JSON/Object.h"
 
 class ThreadStatus {
  public:
@@ -26,6 +27,7 @@ class ThreadStatus {
   ThreadStatus(int64_t _id, int64_t _channel_id, int64_t _value, int64_t _last_value, int64_t _last_updated_in_ms);
   ThreadStatus(const ::resource::ThreadStatus& in);
   friend ThreadStatus& operator<<(ThreadStatus& out, const ::resource::ThreadStatus& in);
+  friend void operator>>(ThreadStatus& in, Poco::JSON::Object::Ptr out);
 };
 
 class ProcessStatus {
@@ -38,6 +40,7 @@ class ProcessStatus {
   ProcessStatus(const ::resource::ProcessStatus in);
   friend ProcessStatus& operator<<(ProcessStatus& out, const ::resource::ThreadStatus& in);
   friend ProcessStatus& operator<<(ProcessStatus& out, const ::resource::ProcessStatus& in);
+  friend void operator>>(ProcessStatus& in, Poco::JSON::Object::Ptr out);
 };
 
 class MachineStatus {
@@ -50,6 +53,7 @@ class MachineStatus {
   MachineStatus(const ::resource::MachineStatus in);
   friend MachineStatus& operator<<(MachineStatus& out, const ::resource::ProcessStatus& in);
   friend MachineStatus& operator<<(MachineStatus& out, const ::resource::MachineStatus& in);
+  friend void operator>>(MachineStatus& in, Poco::JSON::Object::Ptr out);
 };
 
 class ClusterStatus {
@@ -62,6 +66,7 @@ class ClusterStatus {
   ClusterStatus(const ::resource::ClusterStatus in);
   friend ClusterStatus& operator<<(ClusterStatus& out, const ::resource::MachineStatus& in);
   friend ClusterStatus& operator<<(ClusterStatus& out, const ::resource::ClusterStatus& in);
+  friend void operator>>(ClusterStatus& in, Poco::JSON::Object::Ptr out);
 };
 
 class CentralDataRepo {
@@ -76,7 +81,7 @@ class CentralDataRepo {
   static void deleteInstance();
   friend CentralDataRepo& operator<<(CentralDataRepo& out, const ::resource::MachineStatus& in);
   friend CentralDataRepo& operator<<(CentralDataRepo& out, const ::resource::ClusterStatus& in);
-  friend std::ostream& operator>>(CentralDataRepo& out, std::ostream& ostr);
+  friend std::ostream& operator>>(CentralDataRepo& in, std::ostream& ostr);
 
   // std::string getJson();
 };

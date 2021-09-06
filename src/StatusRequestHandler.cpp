@@ -33,9 +33,7 @@ void StatusRequestHandler::handleRequest(Poco::Net::HTTPServerRequest &request,
 
   // response.setContentLength(fileSize);
   std::ostream &ostr = response.send();
-  // TODO:
   *(CentralDataRepo::getInstance()) >> ostr;
-  // ostr << "ok";
   if (ostr.good()) {
     ostr.flush();
   }

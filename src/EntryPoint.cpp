@@ -46,17 +46,22 @@ class EntryPoint : public Poco::Util::ServerApplication {
   int main(const ArgVec &args) {
     CentralDataRepo::getInstance();
     Poco::UInt16 port = 23000;
-    Poco::Net::TCPServer srv(new TCPFactory(), port);
-    srv.start();
+
+    Poco::Net::TCPServer *pSrv = new Poco::Net::TCPServer(new TCPFactory(), port);
+    pSrv->start();
 
     RAY_LOG(INFO) << "TCP server listening on port " << port;
 
     waitForTerminationRequest();
     RAY_LOG(INFO) << "Shutdown request received.";
 
-    srv.stop();
+    pSrv->stop();
+    delete pSrv;
+
+    Poco::ThreadPool::defaultPool().joinAll();
     RAY_LOG(INFO) << "TCP Server Stopped.";
     CentralDataRepo::deleteInstance();
+    RAY_LOG(INFO) << "CentralDataRepo Deleted.";
     return Application::EXIT_OK;
   }
 

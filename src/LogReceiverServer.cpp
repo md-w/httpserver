@@ -34,15 +34,14 @@ ReceiverState operator++(ReceiverState& state) {
   return state;
 }
 
-#define MODULE_NAME "LogReceiverServer"
-static std::string get_session_folder() { return "./session/"; }
-std::string get_name_of_app() { return MODULE_NAME; }
-
 LogReceiverServer::LogReceiverServer(const Poco::Net::StreamSocket& s)
     : TCPServerConnection(s), _is_shutdown_command_received(false) {
-  RAY_LOG(INFO) << "Started: Inside constructor." << get_name_of_app();
+  RAY_LOG(INFO) << "Started: Inside constructor.";
 }
-LogReceiverServer::~LogReceiverServer() { RAY_LOG(INFO) << "Finished: Inside constructor." << get_name_of_app(); }
+LogReceiverServer::~LogReceiverServer() {
+  shutDown();
+  RAY_LOG(INFO) << "Finished: Inside constructor.";
+}
 void LogReceiverServer::shutDown() { _is_shutdown_command_received = true; }
 
 // returns -1 for fatal error

@@ -9,6 +9,7 @@
 #ifndef LogReceiverServer_HH
 #define LogReceiverServer_HH
 
+#include <atomic>
 #include <iostream>
 #include <thread>
 
@@ -21,23 +22,15 @@
 #include "Poco/Util/Application.h"
 #include "Poco/Util/Subsystem.h"
 
-class LogReceiverServer : public Poco::Util::Subsystem, public Poco::Net::TCPServerConnection {
+class LogReceiverServer : public Poco::Net::TCPServerConnection {
  private:
   // stream socket
-  bool _is_shutdown_command_received;
+  std::atomic<bool> _is_shutdown_command_received;
 
  public:
-  /// Returns the name of the subsystem.
-  /// Must be implemented by subclasses.
-  const char* name() const { return "LogReceiverServer"; }
-  /// Initializes the subsystem.
-  void initialize(Poco::Util::Application& app) {}
-
-  /// Uninitializes the subsystem.
-  void uninitialize() {}
+  void run();
 
  private:
-  void run();
   int getData(Poco::Net::StreamSocket& ss, uint8_t* buff, int bytes_to_read);
 
  public:

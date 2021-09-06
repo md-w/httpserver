@@ -19,53 +19,54 @@ void CentralDataRepo::deleteInstance() {
   }
   instance_ = NULL;
 }
-
-void operator<<(CentralDataRepo* repo, ::resource::MachineStatus &m) {
-  // Machine Status
-  auto& cluster_status = repo->cluster_status;
-  auto it = cluster_status.machine_status.find(m.id());
-  if (it != cluster_status.machine_status.end()) {
-    std::unique_ptr<MachineStatus> p_machine_status = std::make_unique<MachineStatus>(m.id(), m.channel_id());
-    cluster_status.machine_status.insert(
-        std::make_pair<uint64_t, std::unique_ptr<MachineStatus>>(m.id(), std::move(p_machine_status)));
+// void operator<<(CentralDataRepo &repo, ::resource::MachineStatus &m) {
+//   auto &cluster_status = repo.cluster_status;
+//   cluster_status << m;
+// }
+void operator<<(CentralDataRepo &repo, ::resource::ClusterStatus &c_in) { repo.cluster_status << c_in; }
+void operator<<(ClusterStatus &c_db, ::resource::ClusterStatus &c_in) {}
+// void operator<<(ClusterStatus &c, ::resource::MachineStatus &m) {
+//   auto it = c.machine_status.find(m.id());
+//   if (it != c.machine_status.end()) {
+//     std::unique_ptr<MachineStatus> p_machine_status = std::make_unique<MachineStatus>(m.id(), m.channel_id());
+//     c.machine_status.insert(
+//         std::make_pair<uint64_t, std::unique_ptr<MachineStatus>>(m.id(), std::move(p_machine_status)));
+//   }
+//   // Machine Status is in Sync.
+//   MachineStatus *db_m = c.machine_status.find(m.id())->second.get();
+//   for (auto &in_proc_itr : m.process_status()) {
+//     (*db_m) << in_proc_itr;
+//   }
+// }
+void operator<<(MachineStatus &m, const ::resource::ProcessStatus &p) {
+  auto it = m.process_status.find(p.id());
+  if (it != m.process_status.end()) {
+    std::unique_ptr<ProcessStatus> p_process_status = std::make_unique<ProcessStatus>(p.id(), p.channel_id());
+    m.process_status.insert(
+        std::make_pair<uint64_t, std::unique_ptr<ProcessStatus>>(p.id(), std::move(p_process_status)));
   }
-  // Machine Status is in Sync.
-
-  // Check Process Status.
-  auto &db_machine_map = cluster_status.machine_status;
-  auto &db_target_machine = cluster_status.machine_status.find(m.id())->second;
-  auto &db_proc_map = db_target_machine->process_status;
-  for (auto &in_proc_itr : m.process_status()) {
-    if (db_proc_map.find(in_proc_itr.id()) == db_proc_map.end()) {
-      // Incoming Process Status is NOT in DB; create new
-      std::unique_ptr<ProcessStatus> p = std::make_unique<ProcessStatus>(in_proc_itr.id(), in_proc_itr.channel_id());
-      db_proc_map.insert(std::make_pair<int64_t, std::unique_ptr<ProcessStatus>>(in_proc_itr.id(), std::move(p)));
-    }
+  // Process Status is in Sync.
+  ProcessStatus *db_p = m.process_status.find(p.id())->second.get();
+  for (auto &in_thread_itr : p.thread_status()) {
+    (*db_p) << in_thread_itr;
   }
-  // Process Status is in sync;
-
-  // Check Thread Status, by iterating the process status data
-  for (auto &in_proc_itr : m.process_status()) {
-    auto &db_process = db_proc_map.find(in_proc_itr.id())->second;
-    auto &db_thread_map = db_process->thread_status;
-    for (auto& in_thread_itr : in_proc_itr.thread_status()) {
-      auto db_thread_status = db_thread_map.find(in_thread_itr.id());
-      if (db_thread_status == db_thread_map.end()) {
-        // Incoming Thread Status is NOT in DB; create new
-        std::unique_ptr<ThreadStatus> p = std::make_unique<ThreadStatus>();
-        p->id = in_thread_itr.id();
-        p->channel_id = in_thread_itr.channel_id();
-        p->value = in_thread_itr.value();
-        p->last_value = in_thread_itr.last_value();
-        p->last_updated_in_ms = in_thread_itr.last_updated_in_ms();
-        db_thread_map.insert(std::make_pair<int64_t, std::unique_ptr<ThreadStatus>>(in_proc_itr.id(), std::move(p)));
-      } else {
-        db_thread_status->second->id = in_thread_itr.id();
-        db_thread_status->second->channel_id = in_thread_itr.channel_id();
-        db_thread_status->second->value = in_thread_itr.value();
-        db_thread_status->second->last_value = in_thread_itr.last_value();
-        db_thread_status->second->last_updated_in_ms = in_thread_itr.last_updated_in_ms();
-      }
-    }
+}
+void operator<<(ProcessStatus &p, const ::resource::ThreadStatus &t) {
+  auto it = p.thread_status.find(t.id());
+  if (it != p.thread_status.end()) {
+    std::unique_ptr<ThreadStatus> p_thread_status = std::make_unique<ThreadStatus>();
+    p_thread_status->channel_id = t.channel_id();
+    p_thread_status->id = t.id();
+    p_thread_status->last_updated_in_ms = t.last_updated_in_ms();
+    p_thread_status->last_value = t.last_value();
+    p_thread_status->value = t.value();
+    p.thread_status.insert(std::make_pair<uint64_t, std::unique_ptr<ThreadStatus>>(t.id(), std::move(p_thread_status)));
+  } else {
+    it->second->channel_id = t.channel_id();
+    it->second->id = t.id();
+    it->second->last_updated_in_ms = t.last_updated_in_ms();
+    it->second->last_value = t.last_value();
+    it->second->value = t.value();
   }
+  // Thread Status is in Sync.
 }

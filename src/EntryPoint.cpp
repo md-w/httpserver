@@ -2,8 +2,8 @@
 #include <Poco/Util/ServerApplication.h>
 #include <logging.h>
 
-#include "LogReceiverServer.h"
 #include "CentralDataRepo.h"
+#include "LogReceiverServer.h"
 
 static std::string get_session_folder() { return "./session/"; }
 class EntryPoint : public Poco::Util::ServerApplication {
@@ -48,7 +48,7 @@ class EntryPoint : public Poco::Util::ServerApplication {
     Poco::UInt16 port = 23000;
     Poco::Net::TCPServer srv(new TCPFactory(), port);
     srv.start();
-    
+
     RAY_LOG(INFO) << "TCP server listening on port " << port;
 
     waitForTerminationRequest();

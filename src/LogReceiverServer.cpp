@@ -128,8 +128,8 @@ void LogReceiverServer::run() {
 
           ::resource::MachineStatus m;
           m.ParseFromString(std::string(data_buff.data(), data_length));
-          
-          CentralDataRepo::getInstance()<<m;
+
+          (*CentralDataRepo::getInstance()) << m;
 
           // print
           RAY_LOG(INFO) << "Time: " << data_timestamp << " data_length: " << data_length

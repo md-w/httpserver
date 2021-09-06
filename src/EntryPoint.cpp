@@ -3,6 +3,7 @@
 #include <logging.h>
 
 #include "CentralDataRepo.h"
+#include "HTTPServer.h"
 #include "LogReceiverServer.h"
 
 static std::string get_session_folder() { return "./session/"; }
@@ -11,13 +12,15 @@ class EntryPoint : public Poco::Util::ServerApplication {
   EntryPoint() : _shutDown(false) {
     ::ray::RayLog::StartRayLog(_name_of_app, ::ray::RayLogLevel::DEBUG, get_session_folder());
     RAY_LOG(INFO) << "Started: " << _name_of_app;
+    CentralDataRepo::getInstance();
+    ServerApplication::addSubsystem(new HTTPServer(100, 16));
     // ServerApplication::addSubsystem(new HTTPFileServer(100, 16));
     // ServerApplication::addSubsystem(new HTTPSFileServer(100, 16));
   }
   ~EntryPoint() {
     RAY_LOG(INFO) << "Stopped: " << _name_of_app;
     ::ray::RayLog::ShutDownRayLog();
-    ;
+    CentralDataRepo::deleteInstance();
   }
   void initialize(Application &self) {
     loadConfiguration();  // load default configuration files, if present
@@ -44,10 +47,9 @@ class EntryPoint : public Poco::Util::ServerApplication {
   }
 
   int main(const ArgVec &args) {
-    CentralDataRepo::getInstance();
     Poco::UInt16 port = 23000;
-
-    Poco::Net::TCPServer *pSrv = new Poco::Net::TCPServer(new TCPFactory(), port);
+    Poco::Net::TCPServer *pSrv =
+        new Poco::Net::TCPServer(new Poco::Net::TCPServerConnectionFactoryImpl<LogReceiverServer>(), port);
     pSrv->start();
 
     RAY_LOG(INFO) << "TCP server listening on port " << port;

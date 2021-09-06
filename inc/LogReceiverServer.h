@@ -39,6 +39,6 @@ class LogReceiverServer : public Poco::Net::TCPServerConnection {
   void shutDown();
 };
 
-typedef Poco::Net::TCPServerConnectionFactoryImpl<LogReceiverServer> TCPFactory;
+// typedef Poco::Net::TCPServerConnectionFactoryImpl<LogReceiverServer> TCPFactory;
 
 #endif

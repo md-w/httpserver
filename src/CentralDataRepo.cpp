@@ -1,6 +1,7 @@
 #include "CentralDataRepo.h"
 
 #include "interfaces/status.pb.h"
+#include "Poco/JSON/Object.h"
 
 CentralDataRepo* CentralDataRepo::instance_ = nullptr;
 
@@ -127,4 +128,12 @@ CentralDataRepo& operator<<(CentralDataRepo& out, const ::resource::MachineStatu
 CentralDataRepo& operator<<(CentralDataRepo& out, const ::resource::ClusterStatus& in) {
   out.cluster_status << in;
   return out;
+}
+
+std::ostream& operator>>(CentralDataRepo& out, std::ostream& ostr) {
+  Poco::JSON::Object obj_cluster_status;
+  obj_cluster_status.set("channel_id", 1);
+  obj_cluster_status.set("id", 1);
+  obj_cluster_status.stringify(ostr);
+  return ostr;
 }

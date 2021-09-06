@@ -69,13 +69,15 @@ class CentralDataRepo {
   static CentralDataRepo* createInstance();
   static CentralDataRepo* instance_;
   CentralDataRepo();
+
  public:
   ClusterStatus cluster_status;
   static CentralDataRepo* getInstance();
   static void deleteInstance();
   friend CentralDataRepo& operator<<(CentralDataRepo& out, const ::resource::MachineStatus& in);
   friend CentralDataRepo& operator<<(CentralDataRepo& out, const ::resource::ClusterStatus& in);
-  
+  friend std::ostream& operator>>(CentralDataRepo& out, std::ostream& ostr);
+
   // std::string getJson();
 };
 

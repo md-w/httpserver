@@ -13,6 +13,13 @@ add_executable(http_server
     src/EntryPoint.cpp
     src/LogReceiverServer.cpp
     src/CentralDataRepo.cpp
+
+    src/OptionsRequestHandler.cpp
+    src/NotFoundRequestHandler.cpp
+    src/MethodNotSupportedRequestHandler.cpp
+    src/GenericHTTPRequestHandlerFactory.cpp
+    src/HTTPServer.cpp
+    src/StatusRequestHandler.cpp
     )
 
 target_include_directories(http_server

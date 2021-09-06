@@ -53,6 +53,7 @@
         "memory_resource": "cpp",
         "set": "cpp",
         "string": "cpp",
-        "mutex": "cpp"
+        "mutex": "cpp",
+        "cfenv": "cpp"
     },
 }

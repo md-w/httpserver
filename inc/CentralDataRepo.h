@@ -22,50 +22,61 @@ class ThreadStatus {
   std::atomic<int64_t> value;
   std::atomic<int64_t> last_value;
   std::atomic<int64_t> last_updated_in_ms;
+  ThreadStatus();
+  ThreadStatus(int64_t _id, int64_t _channel_id, int64_t _value, int64_t _last_value, int64_t _last_updated_in_ms);
+  ThreadStatus(const ::resource::ThreadStatus& in);
+  friend ThreadStatus& operator<<(ThreadStatus& out, const ::resource::ThreadStatus& in);
 };
 
 class ProcessStatus {
  public:
-  ProcessStatus(int64_t _id, int64_t _channel_id) : id(_id), channel_id(_channel_id) {}
   int64_t id;
   int64_t channel_id;
   std::map<int64_t, std::unique_ptr<ThreadStatus>> thread_status;
-  friend void operator<<(ProcessStatus& p, const ::resource::ThreadStatus& t);
+  ProcessStatus();
+  ProcessStatus(int64_t _id);
+  ProcessStatus(const ::resource::ProcessStatus in);
+  friend ProcessStatus& operator<<(ProcessStatus& out, const ::resource::ThreadStatus& in);
+  friend ProcessStatus& operator<<(ProcessStatus& out, const ::resource::ProcessStatus& in);
 };
 
 class MachineStatus {
  public:
-  MachineStatus(int64_t _id, int64_t _channel_id) : id(_id), channel_id(_channel_id) {}
   int64_t id;
   int64_t channel_id;
   std::map<int64_t, std::unique_ptr<ProcessStatus>> process_status;
-  // friend void operator<<(MachineStatus& m, const ::resource::ProcessStatus& p);
-  friend void operator<<(MachineStatus& m, const ::resource::MachineStatus& p);
+  MachineStatus();
+  MachineStatus(int64_t _id);
+  MachineStatus(const ::resource::MachineStatus in);
+  friend MachineStatus& operator<<(MachineStatus& out, const ::resource::ProcessStatus& in);
+  friend MachineStatus& operator<<(MachineStatus& out, const ::resource::MachineStatus& in);
 };
 
 class ClusterStatus {
  public:
-  ClusterStatus(int64_t _id, int64_t _channel_id) : id(_id), channel_id(_channel_id) {}
   int64_t id;
   int64_t channel_id;
   std::map<int64_t, std::unique_ptr<MachineStatus>> machine_status;
-  // friend void operator<<(ClusterStatus& c, ::resource::MachineStatus& m);
-  friend void operator<<(ClusterStatus& c, ::resource::ClusterStatus& m);
+  ClusterStatus();
+  ClusterStatus(int64_t _id);
+  ClusterStatus(const ::resource::ClusterStatus in);
+  friend ClusterStatus& operator<<(ClusterStatus& out, const ::resource::MachineStatus& in);
+  friend ClusterStatus& operator<<(ClusterStatus& out, const ::resource::ClusterStatus& in);
 };
 
 class CentralDataRepo {
  private:
   static CentralDataRepo* createInstance();
   static CentralDataRepo* instance_;
-  CentralDataRepo() : cluster_status(0, 0) {}
-  ~CentralDataRepo() {}
-
+  CentralDataRepo();
  public:
   ClusterStatus cluster_status;
   static CentralDataRepo* getInstance();
   static void deleteInstance();
-  // friend void operator<<(CentralDataRepo& repo, ::resource::MachineStatus& m);
-  friend void operator<<(CentralDataRepo& repo, ::resource::ClusterStatus& c_in);
+  friend CentralDataRepo& operator<<(CentralDataRepo& out, const ::resource::MachineStatus& in);
+  friend CentralDataRepo& operator<<(CentralDataRepo& out, const ::resource::ClusterStatus& in);
+  
+  // std::string getJson();
 };
 
 #endif

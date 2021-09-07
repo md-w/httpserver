@@ -1,6 +1,5 @@
 #include <Poco/Util/HelpFormatter.h>
 #include <Poco/Util/ServerApplication.h>
-#include <logging.h>
 
 #include "monitoring_thread.hpp"
 
@@ -8,12 +7,10 @@ static std::string get_session_folder() { return "./session/"; }
 class EntryPoint : public Poco::Util::ServerApplication {
  public:
   EntryPoint() : _shutDown(false) {
-    ::ray::RayLog::StartRayLog(_name_of_app, ::ray::RayLogLevel::DEBUG, get_session_folder());
-    RAY_LOG(INFO) << "Started: " << _name_of_app;
+    logger().information("Started");
   }
   ~EntryPoint() {
-    RAY_LOG(INFO) << "Stopped: " << _name_of_app;
-    ::ray::RayLog::ShutDownRayLog();
+    logger().information("Stopped");
   }
   void initialize(Application &self) {
     loadConfiguration();  // load default configuration files, if present
@@ -43,7 +40,7 @@ class EntryPoint : public Poco::Util::ServerApplication {
     Poco::UInt16 port = 23000;
     MonitoringThread::getInstance();
     waitForTerminationRequest();
-    RAY_LOG(INFO) << "Shutdown request received.";
+    logger().information("Shutdown request received.");
     MonitoringThread::deleteInstance();
     Poco::ThreadPool::defaultPool().joinAll();
     return Application::EXIT_OK;

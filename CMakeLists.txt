@@ -45,26 +45,32 @@ target_link_libraries(http_server
 
 # add_subdirectory(resource)
 
-add_executable(http_client_tester
-    resource/src/EntryPoint.cpp
+add_library(resource
     resource/src/monitoring_thread.cpp
     )
 
-target_include_directories(http_client_tester
-    PUBLIC resource/inc
-    PRIVATE ${CMAKE_CURRENT_BINARY_DIR}
+target_include_directories(resource
+    PUBLIC ${CMAKE_SOURCE_DIR}/resource/inc
+    PUBLIC ${CMAKE_CURRENT_BINARY_DIR}
     )
 
 protobuf_generate(
     LANGUAGE cpp
-    TARGET http_client_tester
+    TARGET resource
     PROTOS ${CMAKE_SOURCE_DIR}/interfaces/status.proto
     )
 
-target_link_libraries(http_client_tester 
-    PUBLIC Poco::Foundation
-    PUBLIC Poco::Util
+target_link_libraries(resource
     PUBLIC Poco::Net
-    PUBLIC utils
     PUBLIC protobuf::libprotobuf
+    )
+
+
+add_executable(resource_tester
+    resource/src/EntryPoint.cpp
+    )
+
+target_link_libraries(resource_tester
+    PUBLIC Poco::Util
+    PUBLIC resource
     )

@@ -41,7 +41,7 @@ class EntryPoint : public Poco::Util::ServerApplication {
       dummy_data_generator_list.push_back(std::move(std::make_unique<DummyDataGenerator>(i)));
     }
 
-    for (auto &&it : dummy_data_generator_list) {
+    for (auto &it : dummy_data_generator_list) {
       Poco::ThreadPool::defaultPool().start(*it);
     }
     waitForTerminationRequest();

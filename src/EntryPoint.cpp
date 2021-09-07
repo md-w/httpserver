@@ -58,20 +58,13 @@ class EntryPoint : public Poco::Util::ServerApplication {
 
     waitForTerminationRequest();
     RAY_LOG(INFO) << "Shutdown request received.";
-
-    RAY_LOG(INFO) << "Before stop 1.";
-    pSrv->stop();
     pLogReceiverTcpServerConnectionFactory->shutDown();
-    RAY_LOG(INFO) << "After stop 2.";
+    pSrv->stop();
     delete pSrv;
-    RAY_LOG(INFO) << "After delete srv.";
-    delete pLogReceiverTcpServerConnectionFactory;
     CentralDataRepo::deleteInstance();
     //Poco::ThreadPool::defaultPool().stopAll();
     Poco::ThreadPool::defaultPool().joinAll();
     RAY_LOG(INFO) << "TCP Server Stopped.";
-
-    RAY_LOG(INFO) << "CentralDataRepo Deleted.";
     return Application::EXIT_OK;
   }
 

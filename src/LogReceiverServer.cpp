@@ -78,7 +78,7 @@ int LogReceiverServer::getData(Poco::Net::StreamSocket& ss, uint8_t* buff, int b
 void LogReceiverServer::run() {
   Poco::Net::StreamSocket& ss = socket();
   ss.setReceiveTimeout(Poco::Timespan(5, 0));
-  std::string& strSocketAddress = ss.peerAddress().toString();
+  std::string strSocketAddress = ss.peerAddress().toString();
   ReceiverState state = ReceiverState::Init;
   std::vector<char> data_buff;
   int data_buff_size = 100;
@@ -143,13 +143,13 @@ void LogReceiverServer::run() {
         break;
     }
   }
-  try {
-    ss.shutdown();
-  } catch (const Poco::Net::NetException& e) {
-  }
-  try {
-    ss.close();
-  } catch (const Poco::Net::NetException& e) {
-  }
+  // try {
+  //   ss.shutdown();
+  // } catch (const Poco::Net::NetException& e) {
+  // }
+  // try {
+  //   ss.close();
+  // } catch (const Poco::Net::NetException& e) {
+  // }
   RAY_LOG(INFO) << "End";
 }

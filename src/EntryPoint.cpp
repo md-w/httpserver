@@ -66,10 +66,11 @@ class EntryPoint : public Poco::Util::ServerApplication {
     delete pSrv;
     RAY_LOG(INFO) << "After delete srv.";
     delete pLogReceiverTcpServerConnectionFactory;
+    CentralDataRepo::deleteInstance();
     //Poco::ThreadPool::defaultPool().stopAll();
     Poco::ThreadPool::defaultPool().joinAll();
     RAY_LOG(INFO) << "TCP Server Stopped.";
-    CentralDataRepo::deleteInstance();
+
     RAY_LOG(INFO) << "CentralDataRepo Deleted.";
     return Application::EXIT_OK;
   }

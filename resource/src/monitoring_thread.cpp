@@ -124,11 +124,13 @@ void MonitoringThread::run() {
               ss.write((char*)&data_timestamp, 8);
               ss.write((char*)&data_len, 8);
               if (machine_status.SerializeToOstream(&ss) == false) {
+                std::cout << "SerializeToOstream exception: " << std::endl;
                 break;
               }
               std::cout << machine_status.DebugString() << std::endl;
               ss.flush();
             } catch (const Poco::Net::NetException& e) {
+              std::cout << "flush NetException : " << e.what() << std::endl;
               break;
             }
           }
@@ -144,11 +146,11 @@ void MonitoringThread::run() {
         }
       } catch (const Poco::Net::NetException& e) {
         sleep_upto_sec = 10;
-        std::cout << "Unable to connect retrying in " << std::endl;
+        std::cout << "Unable to connect NetException retrying in " << std::endl;
         std::this_thread::sleep_for(std::chrono::seconds(1));
       } catch (const Poco::TimeoutException& e) {
         sleep_upto_sec = 10;
-        std::cout << "Unable to connect retrying in " << std::endl;
+        std::cout << "Unable to connect TimeoutException retrying in " << std::endl;
         std::this_thread::sleep_for(std::chrono::seconds(1));
       }
     }

@@ -17,7 +17,7 @@ void LogReceiverTCPServerConnectionFactory::shutDown() {
   RAY_LOG(INFO) << "LogReceiverTCPServerConnectionFactory destructor start";
   for (auto&& it : list_of_sockets) {
     it->shutDown();
-    delete it;
   }
+  list_of_sockets.clear();
   RAY_LOG(INFO) << "LogReceiverTCPServerConnectionFactory destructor end";
 }

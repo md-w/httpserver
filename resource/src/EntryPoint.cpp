@@ -37,7 +37,7 @@ class EntryPoint : public Poco::Util::ServerApplication {
     Poco::UInt16 port = 23000;
     MonitoringThread::getInstance();
     std::vector<std::unique_ptr<DummyDataGenerator>> dummy_data_generator_list;
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < 5; i++) {
       dummy_data_generator_list.push_back(std::move(std::make_unique<DummyDataGenerator>(i)));
     }
 

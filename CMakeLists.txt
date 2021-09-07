@@ -68,6 +68,7 @@ target_link_libraries(resource
 
 add_executable(resource_tester
     resource/src/EntryPoint.cpp
+    resource/src/DummyDataGenerator.cpp
     )
 
 target_link_libraries(resource_tester

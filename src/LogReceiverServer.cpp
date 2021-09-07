@@ -13,45 +13,43 @@
 #define FUNC_TYPE_EOF 2
 
 enum class ReceiverState { Init = 0, Timestamp = 1, Length = 2, Data = 3, End = 100 };
-ReceiverState operator++(ReceiverState& state) {
-  switch (state) {
-    case ReceiverState::Init:
-      state = ReceiverState::Timestamp;
-      break;
-    case ReceiverState::Timestamp:
-      state = ReceiverState::Length;
-      break;
-    case ReceiverState::Length:
-      state = ReceiverState::Data;
-      break;
-    case ReceiverState::Data:
-      state = ReceiverState::Init;
-      break;
-    default:
-      state = ReceiverState::Init;
-      break;
-  }
-  return state;
-}
+// ReceiverState operator++(ReceiverState& state) {
+//   switch (state) {
+//     case ReceiverState::Init:
+//       state = ReceiverState::Timestamp;
+//       break;
+//     case ReceiverState::Timestamp:
+//       state = ReceiverState::Length;
+//       break;
+//     case ReceiverState::Length:
+//       state = ReceiverState::Data;
+//       break;
+//     case ReceiverState::Data:
+//       state = ReceiverState::Init;
+//       break;
+//     default:
+//       state = ReceiverState::Init;
+//       break;
+//   }
+//   return state;
+// }
 
 LogReceiverServer::LogReceiverServer(const Poco::Net::StreamSocket& s)
-    : TCPServerConnection(s), _is_shutdown_command_received(false) {
-  RAY_LOG(INFO) << "Started: Constructor: LogReceiverServer";
+    : TCPServerConnection(s), _is_shutdown_command(false), _is_already_shutting_down(false) {}
+LogReceiverServer::~LogReceiverServer() { shutDown(); }
+void LogReceiverServer::shutDown() {
+  if (_is_already_shutting_down) return;
+  _is_already_shutting_down = true;
+  _is_shutdown_command = true;
 }
-LogReceiverServer::~LogReceiverServer() {
-  RAY_LOG(INFO) << "Destructor called: LogReceiverServer.";
-  shutDown();
-  RAY_LOG(INFO) << "Destructor executed: LogReceiverServer.";
-}
-void LogReceiverServer::shutDown() { _is_shutdown_command_received = true; }
 
 // returns -1 for fatal error
 // returns 0 for success
 // returns 1 for not fatal errors
 int LogReceiverServer::getData(Poco::Net::StreamSocket& ss, uint8_t* buff, int bytes_to_read) {
-  int ret = 0;
+  int ret = 1;
   int length = 0;
-  while (true) {
+  while (!_is_shutdown_command) {
     int x = bytes_to_read - length;
     if (x > 0) {
       try {
@@ -61,6 +59,7 @@ int LogReceiverServer::getData(Poco::Net::StreamSocket& ss, uint8_t* buff, int b
           break;
         }
         length += length_received;
+        ret = 0;
       } catch (const Poco::TimeoutException& e) {
         ret = 1;
         break;
@@ -79,6 +78,7 @@ int LogReceiverServer::getData(Poco::Net::StreamSocket& ss, uint8_t* buff, int b
 void LogReceiverServer::run() {
   Poco::Net::StreamSocket& ss = socket();
   ss.setReceiveTimeout(Poco::Timespan(5, 0));
+  std::string& strSocketAddress = ss.peerAddress().toString();
   ReceiverState state = ReceiverState::Init;
   std::vector<char> data_buff;
   int data_buff_size = 100;
@@ -88,7 +88,8 @@ void LogReceiverServer::run() {
   int64_t data_length = 0;
   int r = 0;
   RAY_LOG(INFO) << "Started";
-  while ((!_is_shutdown_command_received) && (state != ReceiverState::End)) {
+  while (!_is_shutdown_command) {
+    if (state == ReceiverState::End) break;
     // RAY_LOG(INFO) << "In State: " << (int)state;
     switch (state) {
       case ReceiverState::Init:
@@ -132,8 +133,8 @@ void LogReceiverServer::run() {
           (*CentralDataRepo::getInstance()) << m;
 
           // print
-          RAY_LOG(INFO) << "Time: " << data_timestamp << " data_length: " << data_length
-                        << " Received Data: " << m.DebugString();
+          RAY_LOG(INFO) << "\nConnection from: " << strSocketAddress << " Time: " << data_timestamp
+                        << " data_length: " << data_length << " Received Data: " << m.DebugString();
         }
         break;
       case ReceiverState::End:
@@ -141,6 +142,14 @@ void LogReceiverServer::run() {
       default:
         break;
     }
+  }
+  try {
+    ss.shutdown();
+  } catch (const Poco::Net::NetException& e) {
+  }
+  try {
+    ss.close();
+  } catch (const Poco::Net::NetException& e) {
   }
   RAY_LOG(INFO) << "End";
 }

@@ -25,7 +25,8 @@
 class LogReceiverServer : public Poco::Net::TCPServerConnection {
  private:
   // stream socket
-  std::atomic<bool> _is_shutdown_command_received;
+  std::atomic_bool _is_shutdown_command;
+  std::atomic_bool _is_already_shutting_down;
 
  public:
   void run();

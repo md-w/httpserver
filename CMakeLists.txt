@@ -13,6 +13,7 @@ add_subdirectory(utils)
 add_executable(http_server 
     src/EntryPoint.cpp
     src/LogReceiverServer.cpp
+    src/LogReceiverTCPServerConnectionFactory.cpp
     src/CentralDataRepo.cpp
 
     src/OptionsRequestHandler.cpp
@@ -47,7 +48,6 @@ target_link_libraries(http_server
 add_executable(http_client_tester
     resource/src/EntryPoint.cpp
     resource/src/monitoring_thread.cpp
-    resource/src/status_sock_handler.cpp
     )
 
 target_include_directories(http_client_tester

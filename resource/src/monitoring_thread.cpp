@@ -75,6 +75,7 @@ void MonitoringThread::setStatus(uint64_t id) {
 void MonitoringThread::run() {
   std::cout << "Started monitoring thread" << std::endl;
   int sleep_upto_sec = 10;
+  int iteration_counter = 0;
   while (!_is_shutdown_command) {
     if (sleep_upto_sec > 0) {
       sleep_upto_sec--;
@@ -83,7 +84,8 @@ void MonitoringThread::run() {
       try {
         std::cout << "Trying to connect" << std::endl;
         std::unique_ptr<Poco::Net::StreamSocket> s = std::make_unique<Poco::Net::StreamSocket>();
-        s->connect(Poco::Net::SocketAddress("127.0.0.1", 23000), Poco::Timespan(1, 0));
+        s->connect(Poco::Net::SocketAddress("127.0.0.1", 23000), Poco::Timespan(2, 0));
+        s->setSendTimeout(Poco::Timespan(2, 0));
         Poco::Net::SocketStream ss(*s);
         sleep_upto_sec = 10;
         while (!_is_shutdown_command) {
@@ -94,7 +96,7 @@ void MonitoringThread::run() {
             sleep_upto_sec = 10;
             ::resource::MachineStatus machine_status;
             machine_status.set_id(1);
-            machine_status.set_channel_id(1);
+            machine_status.set_channel_id(iteration_counter++);
             ::resource::ProcessStatus* p_process_status = machine_status.add_process_status();
             p_process_status->set_id(1);
             p_process_status->set_channel_id(1);
@@ -134,6 +136,10 @@ void MonitoringThread::run() {
         sleep_upto_sec = 10;
         try {
           s->shutdown();
+        } catch (const Poco::Net::NetException& e) {
+        }
+        try {
+          s->close();
         } catch (const Poco::Net::NetException& e) {
         }
       } catch (const Poco::Net::NetException& e) {

@@ -20,7 +20,6 @@ add_executable(http_server
     src/NotFoundRequestHandler.cpp
     src/MethodNotSupportedRequestHandler.cpp
     src/GenericHTTPRequestHandlerFactory.cpp
-    src/HTTPServer.cpp
     src/StatusRequestHandler.cpp
     )
 

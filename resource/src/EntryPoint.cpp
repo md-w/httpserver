@@ -3,6 +3,7 @@
 
 #include "DummyDataGenerator.hpp"
 #include "monitoring_thread.hpp"
+#include <iostream>
 
 static std::string get_session_folder() { return "./session/"; }
 class EntryPoint : public Poco::Util::ServerApplication {

@@ -91,4 +91,5 @@
         "xutility": "cpp"
     },
     "C_Cpp.errorSquiggles": "Enabled",
+    "python.formatting.provider": "yapf",
 }

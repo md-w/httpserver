@@ -32,7 +32,7 @@
 *.app
 
 session/
-
+venv/
 build/
 third_party/cmake*/
 third_party/install/

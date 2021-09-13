@@ -9,6 +9,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <spdlog/fmt/fmt.h>
 
 #if defined(_WIN32)
 #ifndef _WINDOWS_

@@ -21,6 +21,10 @@ add_executable(http_server
     src/MethodNotSupportedRequestHandler.cpp
     src/GenericHTTPRequestHandlerFactory.cpp
     src/StatusRequestHandler.cpp
+
+    src/FormRequestHandler.cpp
+    src/FormRequestHandler.cpp
+    src/MultiPartHandler.cpp
     )
 
 target_include_directories(http_server
